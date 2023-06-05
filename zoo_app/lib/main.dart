@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:image_picker/image_picker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,16 +32,29 @@ class MyAppGridView extends StatefulWidget {
 }
 
 class _MyAppGridViewState extends State<MyAppGridView> {
-  Future<void> shareImage() async {
+  List<XFile?> _images = List.filled(30, null);
+  final ImagePicker _picker = ImagePicker();
+
+  Future pickImage(int index) async {
+    final XFile? selectedImage = await _picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      _images[index] = selectedImage;
+    });
+  }
+
+  Future<void> shareImage(int index) async {
     try {
-      final directory = await getApplicationDocumentsDirectory();
-      final imageFile = await File('${directory.path}/my_image.png').create();
-      await imageFile.writeAsBytes((await rootBundle.load('assets/images/my_image.png')).buffer.asUint8List());
-      await Share.shareFiles([imageFile.path], mimeTypes: ['image/png']);
+      if (_images[index] != null) {
+        final File imageFile = File(_images[index]!.path);
+        await Share.shareFiles([imageFile.path], mimeTypes: ['image/png']);
+      } else {
+        print('No image selected');
+      }
     } catch (e) {
       print('error: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +70,7 @@ class _MyAppGridViewState extends State<MyAppGridView> {
       body: GridView.builder(
         padding: const EdgeInsets.all(4),
         itemCount: 30,
+        // SliverGridDelegateWithFixedCrossAxisCount class. Creates grid layouts with a fixed number of tiles in the cross axis
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3,
           childAspectRatio: 0.7,
@@ -72,32 +86,33 @@ class _MyAppGridViewState extends State<MyAppGridView> {
                 color: Color(0xff640000),
                 width: 3,
               ),
-              image: index == 0 ? DecorationImage(
-                image: AssetImage('assets/images/my_image.png'),
+              image: _images[index] != null ? DecorationImage(
+                image: FileImage(File(_images[index]!.path)),
                 fit: BoxFit.cover,
               ) : null,
             ),
             child: Stack(
               children: <Widget>[
-                Center(child: index == 0 ? Text(" ") : Text("Name?", style: TextStyle(color: Color(0xff640000)))),
+                Center(child: _images[index] != null ? Text(" ") : Text("Name?", style: TextStyle(color: Color(0xff640000)))),
                 Positioned(
                   top: 5,
                   right: 5,
-                  child: Icon(Icons.star, color: index == 0 ? Colors.yellow : Colors.grey, size: 40,),
+                  child: Icon(Icons.star, color: _images[index] != null ? Colors.yellow : Colors.grey, size: 40,),
                 ),
                 Positioned(
                   bottom: 5,
                   left: 5,
-                  child: Icon(Icons.add_a_photo, color: Color(0xfff47b20), size: 40,),
+                  child: IconButton(
+                    icon: Icon(Icons.add_a_photo, color: Color(0xfff47b20), size: 40,),
+                    onPressed: () => pickImage(index),
+                  ),
                 ),
                 Positioned(
-                  bottom: 3,
-                  left: 45,
+                  bottom: 2,
+                  left: 50,
                   child: InkWell(
                     onTap: () {
-                      if (index == 0) {
-                        shareImage();
-                      }
+                      shareImage(index);
                     },
                     child: Icon(Icons.add_comment, color: Color(0xfff47b20), size: 40,),
                   ),
