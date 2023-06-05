@@ -35,6 +35,49 @@ class _MyAppGridViewState extends State<MyAppGridView> {
   List<XFile?> _images = List.filled(30, null);
   final ImagePicker _picker = ImagePicker();
 
+  final List<String> names = [
+    'Zweifarbtamarin',
+    'Zwergseidenäffchen',
+    'Witwenpfeifganse',
+    'Przewalski-Pferd',
+    'Jochberger Hummel',
+    'Poitou-Esel',
+    'Ouessantschaf',
+    'Owambo-Ziege',
+    'Meerschweinchen',
+    'Meißner Widder',
+    'Kurzohr-Rüsselspringer',
+    'Jakobschaf',
+    'Großer Mara',
+    'Coburger Fuchsschaf',
+    'Südafrikanischer Blauhalsstrauß',
+    'Buntes Bentheimer Schwein',
+    'Barnevelder Huhn',
+    'Spaltenschildkröte',
+    'Alpaka',
+    'Roter Panda',
+    'Lisztaffe',
+    'Südliches Kugelgürteltier',
+    'Zwergotter',
+    'Weißschwanz-Stachelschwein',
+    'Lama',
+    'Westafrikanische Zwergziege',
+    'Polarfuchs',
+    'Erdmännchen',
+    'Weißkopfseeadler',
+    'Streifenskunk',
+    'Trampeltier',
+    'Schneeeule',
+    'Nachtreiher',
+    'Frettchen',
+    'Bulgarische schraubenhörnige Langhaarziege',
+    'Bentheimer Landschaf',
+    'Mäusebussard',
+    'Europäischer Damhirsch',
+    'Blauer Pfau',
+    'Österreich-ungarischer weißer Barockesel'
+  ];
+
   Future pickImage(int index) async {
     final XFile? selectedImage = await _picker.pickImage(source: ImageSource.gallery);
     setState(() {
@@ -93,7 +136,12 @@ class _MyAppGridViewState extends State<MyAppGridView> {
             ),
             child: Stack(
               children: <Widget>[
-                Center(child: _images[index] != null ? Text(" ") : Text("Name?", style: TextStyle(color: Color(0xff640000)))),
+                Center(child: _images[index] != null ? Text(" ") : Text(
+                    names[index],
+                    style: TextStyle(color: Color(0xff640000)),
+                    textAlign: TextAlign.center,
+                    softWrap: true
+                )),
                 Positioned(
                   top: 5,
                   right: 5,
