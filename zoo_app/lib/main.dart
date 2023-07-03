@@ -14,11 +14,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '7 Sterne',
+      title: 'Tiergarten Sammelalbum',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyAppGridView(title: '7 Sterne'),
+      home: const MyAppGridView(title: 'Tiergarten Sammelalbum'),
     );
   }
 }
@@ -37,7 +37,7 @@ class _MyAppGridViewState extends State<MyAppGridView> {
 
   final List<String> names = [
     'Zweifarbtamarin',
-    'Zwergseidenäffchen',
+    'Zwergseiden- äffchen',
     'Witwenpfeifganse',
     'Przewalski-Pferd',
     'Jochberger Hummel',
@@ -108,7 +108,8 @@ class _MyAppGridViewState extends State<MyAppGridView> {
           child: Text(widget.title),
         ),
         centerTitle: true,
-        backgroundColor: Color(0xfff47b20),
+        backgroundColor: Color(0xFF640000),
+        //backgroundColor: Color(0xfff47b20),
       ),
       body: GridView.builder(
         padding: const EdgeInsets.all(4),
@@ -121,56 +122,57 @@ class _MyAppGridViewState extends State<MyAppGridView> {
           crossAxisSpacing: 4,
         ),
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: Color(0xff640000),
-                width: 3,
-              ),
-              image: _images[index] != null ? DecorationImage(
-                image: FileImage(File(_images[index]!.path)),
-                fit: BoxFit.cover,
-              ) : null,
-            ),
-            child: Stack(
-              children: <Widget>[
-                Center(child: _images[index] != null ? Text(" ") : Text(
-                    names[index],
-                    style: TextStyle(color: Color(0xff640000)),
-                    textAlign: TextAlign.center,
-                    softWrap: true
-                )),
-                Positioned(
-                  top: 5,
-                  right: 5,
-                  child: Icon(Icons.star, color: _images[index] != null ? Colors.yellow : Colors.grey, size: 40,),
-                ),
-                Positioned(
-                  bottom: 5,
-                  left: 5,
-                  child: IconButton(
-                    icon: Icon(Icons.add_a_photo, color: Color(0xfff47b20), size: 40,),
-                    onPressed: () => pickImage(index),
-                  ),
-                ),
-                Positioned(
-                  bottom: 2,
-                  left: 50,
-                  child: InkWell(
-                    onTap: () {
-                      shareImage(index);
+          return InkWell(
+            onTap: _images[index] != null ? () => showDialog(
+              context: context,
+              builder: (_) => AlertDialog(
+                content: Image.file(File(_images[index]!.path)),
+                actions: <Widget>[
+                  TextButton(
+                    child: Text('Schließen'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
                     },
-                    child: Icon(Icons.add_comment, color: Color(0xfff47b20), size: 40,),
                   ),
+                ],
+              ),
+            ) : () => pickImage(index), // Only works if no image
+            child: Container(
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Color(0xff640000),
+                  width: 3,
                 ),
-                Positioned(
-                  bottom: 12,
-                  left: 80,
-                  child: Icon(Icons.question_mark, color: Color(0xfff47b20), size: 30,),
-                ),
-              ],
+                image: _images[index] != null ? DecorationImage(
+                  image: FileImage(File(_images[index]!.path)),
+                  fit: BoxFit.cover,
+                ) : null,
+              ),
+              child: Stack(
+                children: <Widget>[
+                  Center(child: _images[index] != null ? Text(" ") : Icon(Icons.photo_camera, color: Colors.grey, size: 70,),),
+                  Positioned(
+                    bottom: 2,
+                    left: 5,
+                    child: _images[index] != null ? IconButton(
+                      icon: Icon(Icons.photo_camera, color: Color(0xFF640000), size: 40,),
+                      onPressed: () => pickImage(index),
+                    ) : Container(),
+                  ),
+                  Positioned(
+                    bottom: 2,
+                    right: 10,
+                    child: InkWell(
+                      onTap: () {
+                        shareImage(index);
+                      },
+                      child: Icon(Icons.share, color: Color(0xFF640000), size: 40,),
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         },
